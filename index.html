@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>游戏大厅 · Game Hall</title>
+<meta name="description" content="Vibetool 游戏大厅 — 上帝视角沙盒建造 与 简洁地铁模拟" />
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg-2: #0f1524;
+    --panel: rgba(255, 255, 255, 0.04);
+    --panel-hover: rgba(255, 255, 255, 0.07);
+    --border: rgba(255, 255, 255, 0.09);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    --text: #eef2f8;
+    --text-dim: #9aa7bd;
+    --text-faint: #5f6b82;
+    --accent: #5eead4;
+    --accent-2: #818cf8;
+    --radius: 18px;
+    --shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.7);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(129, 140, 248, 0.14), transparent 60%),
+      radial-gradient(1000px 600px at 90% 0%, rgba(94, 234, 212, 0.10), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+    background-attachment: fixed;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: clamp(28px, 6vw, 72px) clamp(18px, 5vw, 40px) 80px;
+  }
+
+  /* ---------- Header ---------- */
+  header { margin-bottom: clamp(30px, 5vw, 56px); }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 14px 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--panel);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    margin-bottom: 22px;
+  }
+  .brand .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(34px, 7vw, 62px);
+    line-height: 1.02;
+    letter-spacing: -1.5px;
+    font-weight: 800;
+    background: linear-gradient(120deg, #ffffff 20%, #b9c4dc 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  h1 .en {
+    display: block;
+    font-size: clamp(13px, 2.4vw, 17px);
+    letter-spacing: 6px;
+    font-weight: 600;
+    margin-top: 14px;
+    color: var(--text-faint);
+    -webkit-text-fill-color: var(--text-faint);
+  }
+  .tagline {
+    margin-top: 18px;
+    color: var(--text-dim);
+    font-size: clamp(14px, 2.4vw, 17px);
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  /* ---------- Game grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: clamp(16px, 2.5vw, 24px);
+  }
+
+  .card {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.3s, background 0.3s, box-shadow 0.35s;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card:hover, .card:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--border-hover);
+    background: var(--panel-hover);
+    box-shadow: var(--shadow);
+    outline: none;
+  }
+
+  .cover {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0b0f1a;
+  }
+  .cover svg { display: block; width: 100%; height: 100%; }
+  .cover::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(10, 14, 23, 0.85));
+    pointer-events: none;
+  }
+  .card:hover .cover svg { transform: scale(1.05); }
+  .cover svg { transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+  .badge {
+    position: absolute; top: 12px; left: 12px; z-index: 2;
+    padding: 4px 10px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border-radius: 999px;
+    background: rgba(10, 14, 23, 0.6);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    color: var(--text-dim);
+  }
+
+  .body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+  .title-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .body h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .body .sub { font-size: 12.5px; color: var(--text-faint); letter-spacing: 1px; }
+  .body p { margin-top: 10px; font-size: 13.5px; line-height: 1.6; color: var(--text-dim); flex: 1; }
+
+  .tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    font-size: 11.5px; padding: 3px 9px; border-radius: 7px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .play {
+    margin-top: 18px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 11px 16px;
+    border-radius: 11px;
+    font-size: 14px; font-weight: 600;
+    color: #041016;
+    background: linear-gradient(120deg, var(--accent), #7dd3fc);
+    border: none;
+    transition: filter 0.2s, transform 0.2s;
+  }
+  .card:hover .play { filter: brightness(1.08); }
+  .play svg { width: 15px; height: 15px; }
+
+  .card[data-accent="metro"] .play { background: linear-gradient(120deg, var(--accent-2), #f472b6); color: #fff; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 12.5px;
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ---------- Overlay player ---------- */
+  .player {
+    position: fixed; inset: 0; z-index: 100;
+    background: #05070c;
+    display: none;
+    flex-direction: column;
+  }
+  .player.open { display: flex; }
+
+  .player-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    background: rgba(8, 11, 18, 0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 13.5px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--panel-hover); border-color: var(--border-hover); }
+  .btn.primary { background: linear-gradient(120deg, var(--accent), #7dd3fc); color: #041016; border: none; }
+  .btn svg { width: 15px; height: 15px; }
+  .player-title { font-size: 14px; font-weight: 600; color: var(--text-dim); margin-left: 4px; }
+  .player-title .zh { color: var(--text); }
+  .spacer { flex: 1; }
+  .icon-btn { padding: 9px; }
+  .icon-btn svg { width: 17px; height: 17px; }
+
+  .player-stage { position: relative; flex: 1; background: #05070c; }
+  .player-stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  .loader {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    color: var(--text-dim); font-size: 14px; letter-spacing: 1px;
+    background: #05070c;
+    transition: opacity 0.4s;
+  }
+  .loader.hidden { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    border-top-color: var(--accent);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 560px) {
+    .player-title { display: none; }
+    .btn span.label-full { display: none; }
+  }
+
+  /* Reveal animation */
+  .card { animation: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+  .card:nth-child(2) { animation-delay: 0.08s; }
+  .card:nth-child(3) { animation-delay: 0.16s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+  @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><span class="dot"></span> VIBETOOL · 游戏合集</div>
+      <h1>游戏大厅<span class="en">GAME HALL</span></h1>
+      <p class="tagline">在一处集合你的浏览器小游戏 —— 点击卡片即可全屏开玩，随时一键返回大厅。</p>
+    </header>
+
+    <main class="grid" id="grid">
+      <!-- Card: City Sandbox -->
+      <button class="card" data-accent="city"
+              data-url="https://vibetool.github.io/god-view-city/"
+              data-zh="上帝视角沙盒建造" data-en="City Sandbox">
+        <div class="cover">
+          <span class="badge">建造 / 沙盒</span>
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="citySky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#13233f"/><stop offset="1" stop-color="#0b1526"/>
+              </linearGradient>
+              <linearGradient id="cityGround" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#1c3a5e"/><stop offset="1" stop-color="#14293f"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#citySky)"/>
+            <circle cx="255" cy="46" r="22" fill="#ffd479" opacity="0.9"/>
+            <circle cx="255" cy="46" r="34" fill="#ffd479" opacity="0.12"/>
+            <!-- isometric ground -->
+            <g transform="translate(160 130)">
+              <polygon points="0,-38 118,26 0,90 -118,26" fill="url(#cityGround)" stroke="#2f5580" stroke-width="1"/>
+              <!-- grid lines -->
+              <g stroke="#2c507a" stroke-width="1" opacity="0.6">
+                <line x1="-59" y1="-6" x2="59" y2="58"/>
+                <line x1="59" y1="-6" x2="-59" y2="58"/>
+                <line x1="-79" y1="12" x2="39" y2="76"/>
+                <line x1="79" y1="12" x2="-39" y2="76"/>
+              </g>
+              <!-- buildings (iso boxes) -->
+              <g>
+                <!-- teal tower -->
+                <polygon points="-38,8 -8,24 -8,-14 -38,-30" fill="#2dd4bf"/>
+                <polygon points="-8,24 22,8 22,-30 -8,-14" fill="#14b8a6"/>
+                <polygon points="-38,-30 -8,-46 22,-30 -8,-14" fill="#5eead4"/>
+                <!-- indigo block -->
+                <polygon points="16,30 46,46 46,18 16,2" fill="#6366f1"/>
+                <polygon points="46,46 76,30 76,2 46,18" fill="#4f46e5"/>
+                <polygon points="16,2 46,-14 76,2 46,18" fill="#818cf8"/>
+                <!-- amber house -->
+                <polygon points="-78,34 -58,45 -58,27 -78,16" fill="#f59e0b"/>
+                <polygon points="-58,45 -38,34 -38,16 -58,27" fill="#d97706"/>
+                <polygon points="-78,16 -58,5 -38,16 -58,27" fill="#fbbf24"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="title-row"><h2>上帝视角沙盒建造</h2></div>
+          <div class="sub">CITY SANDBOX</div>
+          <p>俯视视角自由建造你的城市。选择地图种子、拖放建筑、切换昼夜，从零搭建一座属于你的沙盒都市。</p>
+          <div class="tags"><span class="tag">3D 沙盒</span><span class="tag">城市建造</span><span class="tag">单人</span></div>
+          <span class="play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            开始游戏
+          </span>
+        </div>
+      </button>
+
+      <!-- Card: Mini Metro -->
+      <button class="card" data-accent="metro"
+              data-url="https://vibetool.github.io/betagame/"
+              data-zh="简洁地铁模拟" data-en="Mini Metro">
+        <div class="cover">
+          <span class="badge">策略 / 模拟</span>
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <radialGradient id="metroBg" cx="0.5" cy="0.4" r="0.9">
+                <stop offset="0" stop-color="#111a2e"/><stop offset="1" stop-color="#0a1120"/>
+              </radialGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#metroBg)"/>
+            <!-- river -->
+            <path d="M-10 150 C 60 120 90 175 160 150 S 260 110 330 140 L 330 210 L -10 210 Z"
+                  fill="#1e3a5f" opacity="0.5"/>
+            <!-- metro lines -->
+            <g stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="40,150 90,95 160,95 210,55" stroke="#ef4444"/>
+              <polyline points="55,45 120,80 200,80 275,120" stroke="#22c55e"/>
+              <polyline points="30,105 100,140 190,130 270,60" stroke="#f59e0b"/>
+              <polyline points="150,175 165,110 235,95 285,150" stroke="#818cf8"/>
+            </g>
+            <!-- stations -->
+            <g fill="#0a1120" stroke="#e5eefc" stroke-width="3.5">
+              <circle cx="90" cy="95" r="9"/>
+              <circle cx="200" cy="80" r="9"/>
+              <rect x="152" y="87" width="16" height="16" rx="2"/>
+              <rect x="227" y="87" width="16" height="16" rx="2"/>
+              <polygon points="210,46 219,62 201,62"/>
+              <polygon points="40,141 49,157 31,157"/>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="title-row"><h2>简洁地铁模拟</h2></div>
+          <div class="sub">MINI METRO</div>
+          <p>用最简洁的线条连接车站，把乘客送往对应的形状终点。规划线路、应对客流高峰，冲击最高单局送达。</p>
+          <div class="tags"><span class="tag">策略经营</span><span class="tag">排行榜</span><span class="tag">建议横屏</span></div>
+          <span class="play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            开始游戏
+          </span>
+        </div>
+      </button>
+    </main>
+
+    <footer>
+      <span>共 <b id="count">2</b> 款游戏 · 由 Vibetool 提供</span>
+      <span>提示：地铁模拟建议使用横屏 / 桌面浏览器体验</span>
+    </footer>
+  </div>
+
+  <!-- Fullscreen player overlay -->
+  <div class="player" id="player" role="dialog" aria-modal="true" aria-label="游戏播放器">
+    <div class="player-bar">
+      <button class="btn primary" id="backBtn" aria-label="返回大厅">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span class="label-full">返回大厅</span>
+      </button>
+      <div class="player-title"><span class="zh" id="pTitleZh"></span> · <span id="pTitleEn"></span></div>
+      <div class="spacer"></div>
+      <a class="btn" id="newTabBtn" target="_blank" rel="noopener" title="在新标签打开">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>
+        </svg>
+        <span class="label-full">新标签</span>
+      </a>
+      <button class="btn icon-btn" id="fsBtn" title="全屏" aria-label="全屏">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="player-stage">
+      <div class="loader" id="loader"><div class="spinner"></div><span>载入游戏中…</span></div>
+      <iframe id="frame" title="游戏画面"
+              allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; pointer-lock"
+              allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var player = document.getElementById('player');
+      var frame = document.getElementById('frame');
+      var loader = document.getElementById('loader');
+      var backBtn = document.getElementById('backBtn');
+      var newTabBtn = document.getElementById('newTabBtn');
+      var fsBtn = document.getElementById('fsBtn');
+      var pTitleZh = document.getElementById('pTitleZh');
+      var pTitleEn = document.getElementById('pTitleEn');
+      var cards = document.querySelectorAll('.card');
+      var lastFocused = null;
+
+      function openGame(url, zh, en) {
+        lastFocused = document.activeElement;
+        pTitleZh.textContent = zh;
+        pTitleEn.textContent = en;
+        newTabBtn.href = url;
+        loader.classList.remove('hidden');
+        frame.src = url;
+        player.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        // sync deep-link hash so refresh keeps the game open
+        try { history.replaceState(null, '', '#play=' + encodeURIComponent(url)); } catch (e) {}
+        backBtn.focus();
+      }
+
+      function closeGame() {
+        player.classList.remove('open');
+        frame.src = 'about:blank';
+        document.body.style.overflow = '';
+        loader.classList.add('hidden');
+        try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      frame.addEventListener('load', function () {
+        if (frame.src && frame.src !== 'about:blank' && !/about:blank$/.test(frame.src)) {
+          loader.classList.add('hidden');
+        }
+      });
+
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          openGame(card.dataset.url, card.dataset.zh, card.dataset.en);
+        });
+      });
+
+      backBtn.addEventListener('click', closeGame);
+
+      fsBtn.addEventListener('click', function () {
+        var el = player;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function () {}).call(document);
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && player.classList.contains('open')) {
+          // Esc leaves fullscreen first, then closes the player
+          if (document.fullscreenElement) return;
+          closeGame();
+        }
+      });
+
+      // Deep link: opening index.html#play=<url> jumps straight into a game
+      function restoreFromHash() {
+        var m = /#play=([^&]+)/.exec(location.hash);
+        if (!m) return;
+        var url;
+        try { url = decodeURIComponent(m[1]); } catch (e) { return; }
+        var match = null;
+        cards.forEach(function (c) { if (c.dataset.url === url) match = c; });
+        if (match) openGame(match.dataset.url, match.dataset.zh, match.dataset.en);
+      }
+      restoreFromHash();
+
+      document.getElementById('count').textContent = cards.length;
+    })();
+  </script>
+</body>
+</html>
