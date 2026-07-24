@@ -183,6 +183,7 @@
   .play svg { width: 15px; height: 15px; }
 
   .card[data-accent="metro"] .play { background: linear-gradient(120deg, var(--accent-2), #f472b6); color: #fff; }
+  .card[data-accent="space"] .play { background: linear-gradient(120deg, #7c5cff, #38bdf8); color: #fff; }
 
   /* ---------- Footer ---------- */
   footer {
@@ -379,11 +380,89 @@
           </span>
         </div>
       </button>
+
+      <!-- Card: Space Base Sandbox -->
+      <button class="card" data-accent="space"
+              data-url="https://vibetool.github.io/space-base-sandbox/"
+              data-zh="星际基地沙盒建造" data-en="Space Base Sandbox">
+        <div class="cover">
+          <span class="badge">建造 / 科幻</span>
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <radialGradient id="spaceBg" cx="0.32" cy="0.28" r="1.05">
+                <stop offset="0" stop-color="#1c1b4a"/>
+                <stop offset="1" stop-color="#070613"/>
+              </radialGradient>
+              <linearGradient id="solar" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#6d5cff"/>
+              </linearGradient>
+              <linearGradient id="hub" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#14b8a6"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#spaceBg)"/>
+            <!-- stars -->
+            <g fill="#ffffff">
+              <circle cx="34" cy="28" r="1.5" opacity="0.9"/>
+              <circle cx="88" cy="18" r="1" opacity="0.7"/>
+              <circle cx="150" cy="34" r="1.2" opacity="0.8"/>
+              <circle cx="250" cy="24" r="1" opacity="0.6"/>
+              <circle cx="292" cy="52" r="1.4" opacity="0.85"/>
+              <circle cx="20" cy="90" r="1" opacity="0.6"/>
+              <circle cx="300" cy="120" r="1.2" opacity="0.7"/>
+              <circle cx="60" cy="150" r="1" opacity="0.55"/>
+              <circle cx="120" cy="12" r="1" opacity="0.6"/>
+              <circle cx="205" cy="14" r="1.1" opacity="0.7"/>
+            </g>
+            <!-- planet -->
+            <circle cx="278" cy="196" r="66" fill="#241d5c"/>
+            <ellipse cx="278" cy="196" rx="88" ry="20" fill="none" stroke="#5b4bd6" stroke-width="3" opacity="0.55" transform="rotate(-16 278 196)"/>
+            <!-- solar wings -->
+            <g stroke="#0b1b33" stroke-width="1.2">
+              <polygon points="42,74 92,66 92,132 42,140" fill="url(#solar)"/>
+              <line x1="59" y1="72" x2="59" y2="138" stroke="#0b1b33"/>
+              <line x1="75" y1="70" x2="75" y2="136" stroke="#0b1b33"/>
+              <polygon points="278,66 228,74 228,140 278,132" fill="url(#solar)"/>
+              <line x1="261" y1="72" x2="261" y2="138"/>
+              <line x1="245" y1="70" x2="245" y2="136"/>
+            </g>
+            <!-- struts -->
+            <g stroke="#7a8bb5" stroke-width="4" stroke-linecap="round">
+              <line x1="92" y1="103" x2="120" y2="103"/>
+              <line x1="200" y1="103" x2="228" y2="103"/>
+            </g>
+            <!-- habitat capsules -->
+            <rect x="118" y="92" width="30" height="22" rx="11" fill="#9fb2d6"/>
+            <rect x="172" y="92" width="30" height="22" rx="11" fill="#9fb2d6"/>
+            <!-- central hub -->
+            <polygon points="179,114 160,125 141,114 141,92 160,81 179,92" fill="url(#hub)" stroke="#0b3b34" stroke-width="1.5"/>
+            <circle cx="160" cy="103" r="7" fill="#0b3b34" opacity="0.5"/>
+            <!-- antenna dish -->
+            <line x1="160" y1="81" x2="160" y2="66" stroke="#7a8bb5" stroke-width="2.5"/>
+            <ellipse cx="160" cy="62" rx="9" ry="4.5" fill="#e5eefc" transform="rotate(-20 160 62)"/>
+            <!-- approaching craft -->
+            <g transform="rotate(28 96 52)">
+              <polygon points="96,44 104,58 88,58" fill="#f4b23e"/>
+              <circle cx="96" cy="62" r="2.4" fill="#ff7a3c"/>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="title-row"><h2>星际基地沙盒建造</h2></div>
+          <div class="sub">SPACE BASE SANDBOX</div>
+          <p>在无垠星海中拼装你的太空站。放置舱段、旋转对接、扩建能源与居住模块，从零打造一座属于你的星际基地。</p>
+          <div class="tags"><span class="tag">科幻建造</span><span class="tag">3D 沙盒</span><span class="tag">建议横屏</span></div>
+          <span class="play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            开始游戏
+          </span>
+        </div>
+      </button>
     </main>
 
     <footer>
       <span>共 <b id="count">2</b> 款游戏 · 由 Vibetool 提供</span>
-      <span>提示：地铁模拟建议使用横屏 / 桌面浏览器体验</span>
+      <span>提示：地铁模拟与星际基地建议使用横屏 / 桌面浏览器体验</span>
     </footer>
   </div>
 
