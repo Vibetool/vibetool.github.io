@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>游戏大厅 · Game Hall</title>
 <meta name="description" content="Vibetool 游戏大厅 — 上帝视角沙盒建造 与 简洁地铁模拟" />
 <style>
@@ -25,29 +25,40 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   html, body { height: 100%; }
+  /* 锁定文本缩放：微信安卓调大字体会强制放大网页文字，撑破顶栏/卡片布局 */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
       "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
     color: var(--text);
-    background:
-      radial-gradient(1200px 700px at 15% -10%, rgba(129, 140, 248, 0.14), transparent 60%),
-      radial-gradient(1000px 600px at 90% 0%, rgba(94, 234, 212, 0.10), transparent 55%),
-      linear-gradient(180deg, var(--bg-2), var(--bg));
-    background-attachment: fixed;
+    background: var(--bg);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+  /* 渐变放固定伪元素：iOS 不支持 background-attachment:fixed，部分安卓滚动重绘掉帧 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(129, 140, 248, 0.14), transparent 60%),
+      radial-gradient(1000px 600px at 90% 0%, rgba(94, 234, 212, 0.10), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+  }
+  body.locked { overscroll-behavior: none; }
 
   .wrap {
     max-width: 1120px;
     margin: 0 auto;
+    padding: 32px 20px 80px; /* 旧 X5 内核无 clamp()，整条声明会被丢弃，需静态回退 */
     padding: clamp(28px, 6vw, 72px) clamp(18px, 5vw, 40px) 80px;
   }
 
   /* ---------- Header ---------- */
-  header { margin-bottom: clamp(30px, 5vw, 56px); }
+  header { margin-bottom: 36px; margin-bottom: clamp(30px, 5vw, 56px); }
 
   .brand {
     display: inline-flex;
@@ -69,6 +80,7 @@
   }
 
   h1 {
+    font-size: 40px;
     font-size: clamp(34px, 7vw, 62px);
     line-height: 1.02;
     letter-spacing: -1.5px;
@@ -80,6 +92,7 @@
   }
   h1 .en {
     display: block;
+    font-size: 14px;
     font-size: clamp(13px, 2.4vw, 17px);
     letter-spacing: 6px;
     font-weight: 600;
@@ -90,6 +103,7 @@
   .tagline {
     margin-top: 18px;
     color: var(--text-dim);
+    font-size: 15px;
     font-size: clamp(14px, 2.4vw, 17px);
     max-width: 640px;
     line-height: 1.6;
@@ -99,7 +113,13 @@
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    /* min() 防止 ≤335px 视口（含系统显示放大）时 300px 下限撑破容器被裁切 */
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 18px;
     gap: clamp(16px, 2.5vw, 24px);
+  }
+  @media (max-width: 359px) {
+    .grid { grid-template-columns: 1fr; }
   }
 
   .card {
@@ -117,6 +137,7 @@
     color: inherit;
     font: inherit;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .card:hover, .card:focus-visible {
     transform: translateY(-6px);
@@ -203,6 +224,7 @@
     background: #05070c;
     display: none;
     flex-direction: column;
+    overscroll-behavior: contain;
   }
   .player.open { display: flex; }
 
@@ -210,6 +232,10 @@
     display: flex; align-items: center; gap: 12px;
     padding: 10px 14px;
     padding-top: max(10px, env(safe-area-inset-top));
+    /* 横屏刘海机的左右安全区，返回按钮不进刘海 */
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    touch-action: none;
     background: rgba(8, 11, 18, 0.92);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
@@ -228,6 +254,8 @@
     text-decoration: none;
   }
   .btn:hover { background: var(--panel-hover); border-color: var(--border-hover); }
+  /* .btn 的 display:inline-flex 会盖过 UA 的 [hidden]{display:none}，需显式声明 */
+  .btn[hidden] { display: none; }
   .btn.primary { background: linear-gradient(120deg, var(--accent), #7dd3fc); color: #041016; border: none; }
   .btn svg { width: 15px; height: 15px; }
   .player-title { font-size: 14px; font-weight: 600; color: var(--text-dim); margin-left: 4px; }
@@ -245,8 +273,33 @@
     color: var(--text-dim); font-size: 14px; letter-spacing: 1px;
     background: #05070c;
     transition: opacity 0.4s;
+    touch-action: none;
   }
   .loader.hidden { opacity: 0; pointer-events: none; }
+  .loader-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .loader-actions[hidden] { display: none; }
+
+  /* 微信内引导：无多标签，指引用户从右上角菜单在浏览器中打开 */
+  .wx-tip {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(5, 7, 12, 0.82);
+    display: flex; justify-content: flex-end; align-items: flex-start;
+    padding: 14px 18px;
+  }
+  .wx-tip[hidden] { display: none; }
+  .wx-tip-inner {
+    margin-top: 34px;
+    padding: 16px 22px;
+    border: 1px solid var(--border-hover);
+    border-radius: 14px;
+    background: var(--bg-2);
+    font-size: 15px; line-height: 1.9; text-align: center;
+    color: var(--text);
+  }
+  .wx-tip-inner::before {
+    content: "⤴";
+    display: block; font-size: 26px; margin-bottom: 4px; color: var(--accent);
+  }
   .spinner {
     width: 42px; height: 42px; border-radius: 50%;
     border: 3px solid rgba(255, 255, 255, 0.12);
@@ -491,11 +544,22 @@
       </button>
     </div>
     <div class="player-stage">
-      <div class="loader" id="loader"><div class="spinner"></div><span>载入游戏中…</span></div>
+      <div class="loader" id="loader">
+        <div class="spinner" id="loaderSpin"></div>
+        <span id="loaderMsg">载入游戏中…</span>
+        <div class="loader-actions" id="loaderActions" hidden>
+          <button class="btn primary" id="retryBtn">重试</button>
+          <a class="btn" id="loaderOpenBtn" target="_blank" rel="noopener">在浏览器中打开</a>
+        </div>
+      </div>
       <iframe id="frame" title="游戏画面"
               allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope; pointer-lock"
               allowfullscreen></iframe>
     </div>
+  </div>
+
+  <div class="wx-tip" id="wxTip" hidden>
+    <div class="wx-tip-inner">微信内请点击右上角 <b>···</b><br>选择「在浏览器中打开」</div>
   </div>
 
   <script>
@@ -503,32 +567,96 @@
       var player = document.getElementById('player');
       var frame = document.getElementById('frame');
       var loader = document.getElementById('loader');
+      var loaderSpin = document.getElementById('loaderSpin');
+      var loaderMsg = document.getElementById('loaderMsg');
+      var loaderActions = document.getElementById('loaderActions');
+      var retryBtn = document.getElementById('retryBtn');
+      var loaderOpenBtn = document.getElementById('loaderOpenBtn');
       var backBtn = document.getElementById('backBtn');
       var newTabBtn = document.getElementById('newTabBtn');
       var fsBtn = document.getElementById('fsBtn');
+      var wxTip = document.getElementById('wxTip');
       var pTitleZh = document.getElementById('pTitleZh');
       var pTitleEn = document.getElementById('pTitleEn');
       var cards = document.querySelectorAll('.card');
       var lastFocused = null;
+      var currentUrl = '';
+      var savedScrollY = 0;
+      var slowTimer = null;
+      var giveupTimer = null;
+      var isWeChat = /MicroMessenger/i.test(navigator.userAgent);
+
+      // 微信不支持非 video 元素全屏；其余不支持的环境（如 iPhone Safari）一并隐藏
+      if (isWeChat || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
+        fsBtn.hidden = true;
+      }
+      if (isWeChat) {
+        newTabBtn.querySelector('.label-full').textContent = '浏览器打开';
+      }
+
+      // iOS 不遵守 body overflow:hidden，锁滚动只能用 position:fixed 方案
+      function lockScroll() {
+        savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        document.body.classList.add('locked');
+        document.body.style.position = 'fixed';
+        document.body.style.top = -savedScrollY + 'px';
+        document.body.style.left = '0';
+        document.body.style.width = '100%';
+      }
+      function unlockScroll() {
+        document.body.classList.remove('locked');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.width = '';
+        window.scrollTo(0, savedScrollY);
+      }
+
+      function resetLoader() {
+        loaderSpin.style.display = '';
+        loaderMsg.textContent = '载入游戏中…';
+        loaderActions.hidden = true;
+        loader.classList.remove('hidden');
+      }
+      function stopLoadWatch() {
+        clearTimeout(slowTimer);
+        clearTimeout(giveupTimer);
+      }
+      function startLoadWatch() {
+        stopLoadWatch();
+        slowTimer = setTimeout(function () {
+          loaderSpin.style.display = 'none';
+          loaderMsg.textContent = '加载超时，网络较慢或暂时无法连接';
+          loaderActions.hidden = false;
+        }, 15000);
+        // 个别环境游戏已渲染但 load 事件不派发，兜底放行
+        giveupTimer = setTimeout(function () {
+          loader.classList.add('hidden');
+        }, 30000);
+      }
 
       function openGame(url, zh, en) {
         lastFocused = document.activeElement;
+        currentUrl = url;
         pTitleZh.textContent = zh;
         pTitleEn.textContent = en;
         newTabBtn.href = url;
-        loader.classList.remove('hidden');
+        loaderOpenBtn.href = url;
+        resetLoader();
+        startLoadWatch();
         frame.src = url;
         player.classList.add('open');
-        document.body.style.overflow = 'hidden';
+        lockScroll();
         // sync deep-link hash so refresh keeps the game open
         try { history.replaceState(null, '', '#play=' + encodeURIComponent(url)); } catch (e) {}
         backBtn.focus();
       }
 
       function closeGame() {
+        stopLoadWatch();
         player.classList.remove('open');
         frame.src = 'about:blank';
-        document.body.style.overflow = '';
+        unlockScroll();
         loader.classList.add('hidden');
         try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
         if (lastFocused && lastFocused.focus) lastFocused.focus();
@@ -536,9 +664,31 @@
 
       frame.addEventListener('load', function () {
         if (frame.src && frame.src !== 'about:blank' && !/about:blank$/.test(frame.src)) {
+          stopLoadWatch();
           loader.classList.add('hidden');
         }
       });
+
+      retryBtn.addEventListener('click', function () {
+        resetLoader();
+        startLoadWatch();
+        frame.src = currentUrl;
+      });
+
+      // 顶栏/加载屏上的拖动不传导到底层页面（iframe 内的触摸不经过这里）
+      player.addEventListener('touchmove', function (e) {
+        if (e.target !== frame) e.preventDefault();
+      }, { passive: false });
+
+      // 微信内没有多标签，target=_blank 会直接覆盖当前页，改为引导蒙层
+      function wxGuide(e) {
+        if (!isWeChat) return;
+        e.preventDefault();
+        wxTip.hidden = false;
+      }
+      newTabBtn.addEventListener('click', wxGuide);
+      loaderOpenBtn.addEventListener('click', wxGuide);
+      wxTip.addEventListener('click', function () { wxTip.hidden = true; });
 
       cards.forEach(function (card) {
         card.addEventListener('click', function () {
@@ -550,11 +700,13 @@
 
       fsBtn.addEventListener('click', function () {
         var el = player;
+        var p;
         if (!document.fullscreenElement) {
-          (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el);
+          p = (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el);
         } else {
-          (document.exitFullscreen || document.webkitExitFullscreen || function () {}).call(document);
+          p = (document.exitFullscreen || document.webkitExitFullscreen || function () {}).call(document);
         }
+        if (p && p.catch) p.catch(function () {});
       });
 
       document.addEventListener('keydown', function (e) {
