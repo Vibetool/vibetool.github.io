@@ -206,6 +206,7 @@
   .card[data-accent="metro"] .play { background: linear-gradient(120deg, var(--accent-2), #f472b6); color: #fff; }
   .card[data-accent="space"] .play { background: linear-gradient(120deg, #7c5cff, #38bdf8); color: #fff; }
   .card[data-accent="farm"] .play { background: linear-gradient(120deg, #4ade80, #facc15); color: #14330f; }
+  .card[data-accent="rocket"] .play { background: linear-gradient(120deg, #ff8a3d, #ffd166); color: #2a1400; }
 
   /* ---------- Footer ---------- */
   footer {
@@ -579,6 +580,69 @@
           <div class="sub">MINI FARM</div>
           <p>开垦、播种、收获，喂养家畜换取收益。跟随昼夜循环打理你的小农场，在商店买卖间把它经营壮大。</p>
           <div class="tags"><span class="tag">农场经营</span><span class="tag">休闲</span><span class="tag">建议桌面</span></div>
+          <span class="play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            开始游戏
+          </span>
+        </div>
+      </button>
+
+      <!-- Card: Rocket Launch -->
+      <button class="card" data-accent="rocket"
+              data-url="https://vibetool.github.io/rocket-launch/"
+              data-zh="火箭发射" data-en="Rocket Launch">
+        <div class="cover">
+          <span class="badge">模拟 / 建造</span>
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="rkSky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#0a1024"/><stop offset="0.55" stop-color="#1e3a63"/>
+                <stop offset="1" stop-color="#5aa9e0"/>
+              </linearGradient>
+              <linearGradient id="rkFlame" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#fff3c4"/><stop offset="0.5" stop-color="#ffb43d"/>
+                <stop offset="1" stop-color="#ff5722" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#rkSky)"/>
+            <!-- stars -->
+            <g fill="#fff">
+              <circle cx="34" cy="22" r="1.4" opacity=".9"/><circle cx="96" cy="14" r="1" opacity=".65"/>
+              <circle cx="150" cy="30" r="1.1" opacity=".75"/><circle cx="238" cy="18" r="1.3" opacity=".8"/>
+              <circle cx="286" cy="44" r="1" opacity=".6"/><circle cx="62" cy="56" r="1" opacity=".55"/>
+              <circle cx="200" cy="52" r="1" opacity=".5"/>
+            </g>
+            <!-- 地平线弧 -->
+            <path d="M-20 186 Q 160 150 340 186 L 340 210 L -20 210 Z" fill="#4e9a4a"/>
+            <path d="M-20 190 Q 160 158 340 190" fill="none" stroke="#7fd07a" stroke-width="2" opacity=".55"/>
+            <!-- 分离的一级（下方，翻滚） -->
+            <g transform="translate(112 150) rotate(-16)">
+              <rect x="-7" y="-13" width="14" height="26" rx="2" fill="#c8d2e2" stroke="#16233a" stroke-width="1.6"/>
+              <polygon points="-7,13 7,13 9,20 -9,20" fill="#7c8aa0" stroke="#16233a" stroke-width="1.6"/>
+            </g>
+            <!-- 主火箭 -->
+            <g transform="translate(196 104)">
+              <!-- 尾焰 -->
+              <path d="M-11 34 Q 0 92 11 34 Z" fill="url(#rkFlame)"/>
+              <!-- 引擎 -->
+              <polygon points="-12,20 12,20 16,34 -16,34" fill="#5d6b80" stroke="#16233a" stroke-width="2"/>
+              <!-- 箭体 -->
+              <rect x="-13" y="-40" width="26" height="60" rx="3" fill="#f2f5fa" stroke="#16233a" stroke-width="2"/>
+              <rect x="-13" y="-4" width="26" height="9" fill="#2b3f5c"/>
+              <rect x="-13" y="-26" width="26" height="5" fill="#ff8a3d"/>
+              <!-- 整流罩 -->
+              <path d="M-13 -40 Q 0 -74 13 -40 Z" fill="#e2e9f4" stroke="#16233a" stroke-width="2"/>
+              <!-- 尾翼 -->
+              <polygon points="-13,6 -25,22 -13,20" fill="#ff8a3d" stroke="#16233a" stroke-width="1.8"/>
+              <polygon points="13,6 25,22 13,20" fill="#ff8a3d" stroke="#16233a" stroke-width="1.8"/>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="title-row"><h2>火箭发射</h2></div>
+          <div class="sub">ROCKET LAUNCH</div>
+          <p>用引擎、燃料箱和分离器搭出你的多级火箭。算好推重比，在燃料耗尽的瞬间抛掉空壳，冲过 100 公里卡门线。</p>
+          <div class="tags"><span class="tag">物理模拟</span><span class="tag">装配建造</span><span class="tag">单人</span></div>
           <span class="play">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
             开始游戏
